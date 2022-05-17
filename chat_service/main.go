@@ -1,32 +1,66 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net"
+	"net/http"
+
+	"github.com/gorilla/websocket"
 )
 
-func main() {
-	s := newServer()
-	go s.run()
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
-	// start the tcp server
-	listener, err := net.Listen("tcp", ":8888")
+func sendMessage(w http.ResponseWriter, r *http.Request) {
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Fatalf("unable to start server: %s", err.Error())
+		log.Println(err)
+		return
 	}
-	defer listener.Close()
-	log.Printf("started server on :8888")
 
+	log.Println("Client Connected")
+	err = ws.WriteMessage(1, []byte("Hi Client!"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	reader(ws)
+}
+
+func reader(conn *websocket.Conn) {
 	for {
-		// infinite loop
-
-		conn, err := listener.Accept()
-		// on receive a new tcp connection
+		// read in a message
+		messageType, p, err := conn.ReadMessage()
 		if err != nil {
-			log.Printf("unable to accept connection: %s", err.Error())
-			continue
+			log.Println(err)
+			return
 		}
-		c := s.newClient(conn)
-		go c.readInput()
+		// print out that message for clarity
+		fmt.Println(string(p))
+
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+
 	}
+}
+
+func setupRoutes() {
+	http.HandleFunc("/nick", sendMessage)
+	http.HandleFunc("/join", sendMessage)
+	http.HandleFunc("/listRooms", sendMessage)
+	http.HandleFunc("/msg", sendMessage)
+	http.HandleFunc("/quit", sendMessage)
+}
+
+func main() {
+	// start the server
+	setupRoutes()
+	log.Printf("starting server on http://localhost:8080/chat")
+	http.ListenAndServe(":8080", nil)
+
 }
