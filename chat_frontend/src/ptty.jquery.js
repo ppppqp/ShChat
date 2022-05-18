@@ -647,7 +647,7 @@ jQuery;
                 }
 
                 if(!cmd || cmd == ''){
-                    return cmd_update();
+                    return null
                 }else{
                     cmd_name = cmd.split( /\s+/ )[0];
                 }

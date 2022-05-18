@@ -4,9 +4,10 @@
 import VueTerminal from './components/Terminal.vue'
 export default {
   data: ()=>({
-      text: "",
-      response: "abcac",
-      messages: ['a', 'b', 'c', 'd'],
+      messages: [
+        {text: "hello", id: 1},
+        {text: "world", id: 2}
+      ],
       connections: null
     }),
   components:{
@@ -19,10 +20,10 @@ export default {
     onCliCommand(data, resolve, reject){
       // typed command is available in data.text
       // don't forget to resolve or reject the Promise
-      console.log(data)
+      this.sendMessage(data.text)
       setTimeout(()=> {
         resolve('')
-      }, 300)
+      }, 1000)
     }
   },
   created: function() {
@@ -30,9 +31,10 @@ export default {
     this.connection = new WebSocket("ws://127.0.0.1:8080/connect")
 
     this.connection.onmessage = (event) => {
-      console.log(event.data);
-      this.response = event.data;
-      console.log("response is", this.response);
+      const currentDate = new Date(); 
+      const timestamp = currentDate. getTime()
+      this.messages.push({text: event.data, id: timestamp})
+      this.$refs.terminal.push(event.data);
     }
 
     this.connection.onopen = (event) => {
@@ -45,16 +47,12 @@ export default {
 </script>
 
 <template>
-  <VueTerminal :intro="intro"
-            console-sign="$"
-            allow-arbitrary
-            height="500px"
-            @command="onCliCommand"
-            executeCommand="sendMessage"
-            ></VueTerminal>
-  <input v-model="text">{{text}}
-  <h1>{{ response }}</h1>
-  <button @click="sendMessage(text)">Send</button>
-
-
+    <VueTerminal 
+        ref="terminal"
+        intro="Welcome to ShChat!"
+        console-sign="$"
+        allow-arbitrary
+        height="90vh"
+        @command="onCliCommand"
+        ></VueTerminal>
 </template>
