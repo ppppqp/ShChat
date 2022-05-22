@@ -1,15 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"net"
 	"strings"
+
+	"github.com/gorilla/websocket"
 )
 
 type client struct {
-	conn     net.Conn
+	conn     *websocket.Conn
 	nick     string
 	room     *room
 	commands chan<- command
@@ -17,17 +17,26 @@ type client struct {
 
 func (c *client) readInput() {
 	for {
-		msg, err := bufio.NewReader(c.conn).ReadString('\n')
+		// read in a message
+		_, msg, err := c.conn.ReadMessage()
 		if err != nil {
+			log.Println(err)
 			return
 		}
-		msg = strings.Trim(msg, "\r\n")
+		// print out that message for clarity
+		message := string(msg)
+		fmt.Println(string(message))
+		// if err := c.conn.WriteMessage(messageType, p); err != nil {
+		// 	log.Println(err)
+		// 	return
+		// }
+
+		message = strings.Trim(message, "\r\n")
 		// parse argument
-		args := strings.Split(msg, " ")
+		args := strings.Split(message, " ")
 		cmd := strings.TrimSpace(args[0])
 		switch cmd {
 		case "/nick":
-			log.Printf("recieved")
 			c.commands <- command{
 				id:     CMD_NICK,
 				client: c,
@@ -64,9 +73,12 @@ func (c *client) readInput() {
 }
 
 func (c *client) err(err error) {
-	c.conn.Write([]byte("ERR: " + err.Error() + "\n"))
+	c.conn.WriteMessage(1, []byte(err.Error()))
 }
 
 func (c *client) msg(msg string) {
-	c.conn.Write([]byte("< " + msg + "\n"))
+	if err := c.conn.WriteMessage(1, []byte(msg)); err != nil {
+		log.Println(err)
+		return
+	}
 }

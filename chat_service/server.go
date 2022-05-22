@@ -5,19 +5,73 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"strings"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type server struct {
 	rooms    map[string]*room
 	commands chan command
+	ticker   *time.Ticker
 }
 
 func newServer() *server {
-	return &server{
+	s := &server{
 		rooms:    make(map[string]*room),
 		commands: make(chan command),
+		ticker:   time.NewTicker(60 * time.Second),
 	}
+	go func() {
+		for {
+			select {
+			case <-s.ticker.C:
+				// on every tick
+				for k, r := range s.rooms {
+					// update the heartbeat of each room
+					if !r.tick() {
+						// if the room is nolonger considered active
+						// close the room
+						delete(s.rooms, k)
+					}
+				}
+			}
+		}
+	}()
+	return s
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func (s *server) newClient(w http.ResponseWriter, r *http.Request) {
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Client Connected")
+	err = ws.WriteMessage(1, []byte("Greetings from the chat-room-tender! You are now connected. Join or create a room."))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	c := client{
+		conn:     ws,
+		nick:     "anonymous",
+		commands: s.commands,
+	}
+	c.readInput()
+}
+
+func (s *server) setupRoutes() {
+	http.HandleFunc("/connect", s.newClient)
 }
 
 func (s *server) run() {
@@ -34,15 +88,6 @@ func (s *server) run() {
 		case CMD_QUIT:
 			s.quit(cmd.client, cmd.args)
 		}
-	}
-}
-
-func (s *server) newClient(conn net.Conn) *client {
-	log.Printf("new client has connected: %s", conn.RemoteAddr().String())
-	return &client{
-		conn:     conn,
-		nick:     "anonymous",
-		commands: s.commands,
 	}
 }
 
@@ -74,7 +119,11 @@ func (s *server) listRooms(c *client, args []string) {
 	for name := range s.rooms {
 		rooms = append(rooms, name)
 	}
-	c.msg(fmt.Sprintf("available rooms are: %s", strings.Join(rooms, ",")))
+	if len(rooms) == 0 {
+		c.msg(fmt.Sprintf("There is no available room currently. Create one!"))
+	} else {
+		c.msg(fmt.Sprintf("available rooms are: %s", strings.Join(rooms, ",")))
+	}
 }
 
 func (s *server) msg(c *client, args []string) {

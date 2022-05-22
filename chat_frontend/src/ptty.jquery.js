@@ -1,5 +1,5 @@
 import jQuery from 'jquery'
-
+import {SUPRESS_OUTPUT_LIST} from './type.js'
 /**
  * @file   : ptty.jquery.js
  * @ver    : 0.0.5 (beta)
@@ -477,7 +477,6 @@ jQuery;
             public_methods.tokenize = function(command, options_arr){
                 var out = {};
                 var cmd = $.trim(command).split( /\s+/ );
-
                 if(typeof cmd[0] === 'undefined' || cmd[0] === ''){
                     out = false;
                 }else if(typeof options_arr !== 'undefined'){
@@ -531,6 +530,7 @@ jQuery;
                         }
                         // Add to output
                         if(option && quote_open === false){
+
                             out[option] = value;
                         }
                     }
@@ -645,14 +645,13 @@ jQuery;
                     cmd_opts.next = null;
                     save_to_history = 0;
                 }
-
                 if(!cmd || cmd == ''){
-                    return null
+                    return cmd_update();
                 }else{
                     cmd_name = cmd.split( /\s+/ )[0];
                 }
 
-                if(typeof commands[cmd_name] !== 'undefined'){
+                if(typeof commands[cmd_name] !== 'undefined' || cmd_name in SUPRESS_OUTPUT_LIST){
                     cmd_obj = public_methods.tokenize(cmd, commands[cmd_name].options);
                 }else{
                     if(!quiet){
@@ -668,7 +667,7 @@ jQuery;
                         return cmd_update();
                     }
                 }
-
+                
                 // Run callbefores for current command if any
                 if(typeof callbefores[cmd_name] == 'function'){
                     cmd_obj = cmd_response(callbefores[cmd_name](cmd_obj));

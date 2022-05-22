@@ -16,7 +16,8 @@
 <script>
 import $ from 'jquery'
 import '../ptty.jquery.js'
-
+import '../type.js'
+import { SUPRESS_OUTPUT_LIST } from '../type.js'
 export default {
   name: 'VueTerminal',
   data: function () {
