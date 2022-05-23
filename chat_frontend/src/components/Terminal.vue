@@ -50,6 +50,12 @@ export default {
 
   },
   methods: {
+    createCommandObj (cmd){
+        return {
+          command: this.ptty.get_command_option('last'),
+          options: Object.keys(cmd)
+        }
+    },
     toggleWaiting () {
       this.waiting = !this.waiting
     },
@@ -58,13 +64,9 @@ export default {
     }
   },
   mounted () {
-    const commandEmitter = (commandText) => {
-      console.log(commandText)
+    const commandEmitter = (commandObj) => {
       let prms = new Promise((resolve, reject) => {
-        var data = {
-          text: commandText
-        }
-        this.$emit('command', data, resolve, reject)
+        this.$emit('command', commandObj, resolve, reject)
         this.toggleWaiting()
       })
 
@@ -91,8 +93,8 @@ export default {
 
     $ptty.register('command', {
       name: '/nick',
-      method: function (cmd) {
-        commandEmitter($ptty.get_command_option('last'))
+      method: (cmd) => {
+        commandEmitter(this.createCommandObj(cmd));
         cmd.out = ''
         return cmd
       },
@@ -101,8 +103,8 @@ export default {
 
     $ptty.register('command', {
       name: '/join',
-      method: function (cmd) {
-        commandEmitter($ptty.get_command_option('last'))
+      method: (cmd) => {
+        commandEmitter(this.createCommandObj(cmd));
         cmd.out = ''
         return cmd
       },
@@ -110,8 +112,8 @@ export default {
 
     $ptty.register('command', {
       name: '/quit',
-      method: function (cmd) {
-        commandEmitter($ptty.get_command_option('last'))
+      method: (cmd) => {
+        commandEmitter(this.createCommandObj(cmd));
         cmd.out = ''
         return cmd
       },
@@ -119,8 +121,8 @@ export default {
 
     $ptty.register('command', {
       name: '/msg',
-      method: function (cmd) {
-        commandEmitter($ptty.get_command_option('last'))
+      method: (cmd) => {
+        commandEmitter(this.createCommandObj(cmd));
         cmd.out = ''
         return cmd
       },
@@ -128,11 +130,12 @@ export default {
 
     $ptty.register('command', {
       name: '/rooms',
-      method: function (cmd) {
-        commandEmitter($ptty.get_command_option('last'))
+      method: (cmd) => {
+        commandEmitter(this.createCommandObj(cmd));
         cmd.out = ''
         return cmd
       },
+      options: ['-v'],
     })
 
   }

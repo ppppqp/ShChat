@@ -22,7 +22,7 @@ export default {
     onCliCommand(data, resolve, reject){
       // typed command is available in data.text
       // don't forget to resolve or reject the Promise
-      this.sendMessage(data.text)
+      this.sendMessage(JSON.stringify(data))
       setTimeout(()=> {
         resolve('')
       }, 1000)

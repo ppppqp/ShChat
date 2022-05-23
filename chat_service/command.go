@@ -11,7 +11,8 @@ const (
 )
 
 type command struct {
-	id     commandID
-	client *client
-	args   []string
+	id      commandID
+	client  *client
+	args    []string        // all arguments. used for /nick and /msg
+	options map[string]bool // filtered flags
 }
