@@ -7,7 +7,9 @@ const (
 	CMD_JOIN
 	CMD_ROOMS
 	CMD_MSG
+	CMD_LEAVE
 	CMD_QUIT
+	CMD_SHUTDOWN
 )
 
 type command struct {

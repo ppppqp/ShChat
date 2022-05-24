@@ -85,9 +85,14 @@ func (s *server) run() {
 			s.listRooms(cmd.client, cmd.args, cmd.options)
 		case CMD_MSG:
 			s.msg(cmd.client, cmd.args, cmd.options)
+		case CMD_LEAVE:
+			s.leave(cmd.client, cmd.args, cmd.options)
 		case CMD_QUIT:
 			s.quit(cmd.client, cmd.args, cmd.options)
+		case CMD_SHUTDOWN:
+			s.shutdown(cmd.client)
 		}
+
 	}
 }
 
@@ -107,14 +112,17 @@ func (s *server) join(c *client, args []string, options map[string]bool) {
 		}
 		s.rooms[roomName] = r
 	}
+	s.quitCurrentRoom(c)
 	r.members[c.conn.RemoteAddr()] = c
 	r.heartbeat = 60
-	s.quitCurrentRoom(c)
 	c.room = r
 	r.broadcast(c, fmt.Sprintf("%s has joined the room", c.nick))
 	c.msg(fmt.Sprintf("welcome to %s", r.name))
 }
-
+func (s *server) leave(c *client, args []string, options map[string]bool) {
+	s.quitCurrentRoom(c)
+	c.msg("Alright, you are in the lobby now.")
+}
 func (s *server) listRooms(c *client, args []string, options map[string]bool) {
 	var rooms []string
 	for name := range s.rooms {
@@ -129,13 +137,16 @@ func (s *server) listRooms(c *client, args []string, options map[string]bool) {
 			str += fmt.Sprintf("| %-20s | %-20s/60 | %-20s \n", "Room Name", "Active Level", "#Members")
 			str += fmt.Sprintf("+%s+\n", strings.Repeat("-", 65))
 			for k, r := range s.rooms {
-				str += fmt.Sprintf("- %-20s   %-20d   %-20d \n", k, r.heartbeat, len(r.members))
+				if c.room.name == k {
+					str += fmt.Sprintf("* %-20s   %-20d   %-20d \n", k, r.heartbeat, len(r.members))
+				} else {
+					str += fmt.Sprintf("- %-20s   %-20d   %-20d \n", k, r.heartbeat, len(r.members))
+				}
 			}
 			c.msg(str)
 		} else {
 			c.msg(fmt.Sprintf("available rooms are: %s", strings.Join(rooms, ",")))
 		}
-
 	}
 }
 
@@ -164,4 +175,9 @@ func (s *server) quitCurrentRoom(c *client) {
 		delete(c.room.members, c.conn.RemoteAddr())
 		c.room.broadcast(c, fmt.Sprintf("%s has left the room", c.nick))
 	}
+}
+
+func (s *server) shutdown(c *client) {
+	log.Printf("client has disconnected: %s", c.conn.RemoteAddr().String())
+	delete(c.room.members, c.conn.RemoteAddr())
 }

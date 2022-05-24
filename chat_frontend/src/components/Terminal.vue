@@ -98,7 +98,7 @@ export default {
         cmd.out = ''
         return cmd
       },
-      help: 'A demo command.'
+      help: 'Use /nick <nickname> to create a nickname for yourself.'
     })
 
     $ptty.register('command', {
@@ -108,6 +108,7 @@ export default {
         cmd.out = ''
         return cmd
       },
+      help: ' Use /join room_name to join the room_name. If room_name does not exists, create it.'
     })
 
     $ptty.register('command', {
@@ -117,10 +118,21 @@ export default {
         cmd.out = ''
         return cmd
       },
+      help:'Disconnect.'
     })
 
     $ptty.register('command', {
       name: '/msg',
+      method: (cmd) => {
+        commandEmitter(this.createCommandObj(cmd));
+        cmd.out = ''
+        return cmd
+      },
+      help: 'Use /msg message to send the message to everyone else in the room.'
+    })
+
+    $ptty.register('command', {
+      name: '/leave',
       method: (cmd) => {
         commandEmitter(this.createCommandObj(cmd));
         cmd.out = ''
@@ -136,6 +148,7 @@ export default {
         return cmd
       },
       options: ['-v'],
+      help: 'See the list of all existing rooms. Use /rooms -v to see a verbose list.'
     })
 
   }

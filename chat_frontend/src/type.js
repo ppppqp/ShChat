@@ -3,6 +3,7 @@ export const SUPRESS_OUTPUT_LIST = [
     '/rooms',
     '/join',
     '/msg',
-    '/quit'
+    '/quit',
+    '/leave',
 ]
 

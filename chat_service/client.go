@@ -21,7 +21,13 @@ func (c *client) readInput() {
 		// read in a message
 		_, msg, err := c.conn.ReadMessage()
 		if err != nil {
-			log.Println(err)
+			log.Println("Error:", err)
+			c.commands <- command{
+				id:      CMD_SHUTDOWN,
+				client:  c,
+				args:    nil,
+				options: nil,
+			}
 			return
 		}
 		var cmdObj commandObj
@@ -63,6 +69,13 @@ func (c *client) readInput() {
 		case "/rooms":
 			c.commands <- command{
 				id:      CMD_ROOMS,
+				client:  c,
+				args:    args,
+				options: options,
+			}
+		case "/leave":
+			c.commands <- command{
+				id:      CMD_LEAVE,
 				client:  c,
 				args:    args,
 				options: options,

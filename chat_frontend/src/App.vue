@@ -43,7 +43,10 @@ export default {
     this.connection.onopen = (event) => {
       console.log("Successfully connected to the echo websocket server...")
     }
-
+    // window.onbeforeunload = function() {
+    //   this.connection.onclose = function () {}; // disable onclose handler first
+    //   this.connection.close();
+    // };
   }
 }
 
@@ -87,7 +90,7 @@ export default {
     <q-dialog v-model="helpMessage">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Alert</div>
+          <div class="text-h6">Manual</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -99,8 +102,13 @@ export default {
             <li><code>history</code> : History list of all the commands.</li>
             <li><code>clear</code> : Clear everything on the terminal</li>
             <li><code>/nick &lt;nick_name&gt;</code> : Create a &lt;nick_name&gt; for yourself.</li>
-            <li><code>/rooms</code> : See the list of all existing rooms.</li>
+            <li><code>/rooms</code> : See the list of all existing rooms.
+              <ul>
+                <li><code>/rooms -v </code> See a verbose list.</li>
+              </ul>
+            </li>
             <li><code>/join &lt;room_name&gt;</code> : Join the &lt;room_name&gt;. If &lt;room_name&gt; doesn't exists, create it.</li>
+            <li><code>/leave </code> : Leave the current room.</li>
             <li><code>/msg &lt;message&gt;</code> : Send the &lt;message&gt; to everyone else in the room.</li>
             <li><code>/quit</code> : Disconnect.</li>
 

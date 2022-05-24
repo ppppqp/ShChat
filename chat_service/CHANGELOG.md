@@ -1,3 +1,6 @@
+### 2022-05-23
+* Add `\leave` command.
+* Delete the user thread from the room after they leave the page.
 ### 2022-05-22
 * Switched the plain string communication to JSON for extendability. 
 * Delete the member from the room after quit (but if the client just shutdown the connection without using quit command, the server can not close the connection gracefully)
