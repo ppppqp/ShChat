@@ -83,7 +83,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](http://shchat.cyou:8080/)
 
 There are many great chat softwares on the internet. Most of them have fancy layouts. This is awkward sometimes: I can't mess around with my friends using them at work without being caught by my boss. So I created this terminal style chat software so I can pretend that I am doing my job while chatting.
 
