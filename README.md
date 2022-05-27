@@ -18,12 +18,12 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
+<!-- [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![LinkedIn][linkedin-shield]][linkedin-url] -->
 
 
 
@@ -36,6 +36,8 @@
 
   <h3 align="center">ShChat</h3>
 
+
+  [Try it out!](http://shchat.cyou:8080/)
   <p align="center">
     Terminal style chat software to help you goof off with friends without being noticed.
     <br />
@@ -180,7 +182,7 @@ See the [open issues](https://github.com/othneildrew/Best-README-Template/issues
 <!-- CONTACT -->
 ## Contact
 
-Qiping Pan - [@your_twitter](https://twitter.com/QipingP) - panqiping@outlook.com
+Qiping Pan - [@QipingP](https://twitter.com/QipingP) - panqiping@outlook.com
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
