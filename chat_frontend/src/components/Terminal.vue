@@ -174,7 +174,7 @@ export default {
 .boring div.prompt div.input, .boring div.content div div.cmd_in, .boring div.prompt div.input::before{ line-height: 2em; }
 
 /* other styles */
-#terminal{ position: relative; display: block; overflow-X: hidden; height: 100%;text-align: left; }
+#terminal{ position: relative; display: block; overflow-x: hidden; height: 100%;text-align: left; }
  #terminal div.content div p{ margin: 0; }
  #terminal div.content div{ clear: both;  word-wrap:break-word; }
  #terminal div.content div ul{ padding: 0; white-space: normal }

@@ -137,7 +137,7 @@ func (s *server) listRooms(c *client, args []string, options map[string]bool) {
 			str += fmt.Sprintf("| %-20s | %-20s/60 | %-20s \n", "Room Name", "Active Level", "#Members")
 			str += fmt.Sprintf("+%s+\n", strings.Repeat("-", 65))
 			for k, r := range s.rooms {
-				if c.room.name == k {
+				if c.room != nil && c.room.name == k {
 					str += fmt.Sprintf("* %-20s   %-20d   %-20d \n", k, r.heartbeat, len(r.members))
 				} else {
 					str += fmt.Sprintf("- %-20s   %-20d   %-20d \n", k, r.heartbeat, len(r.members))
@@ -179,5 +179,7 @@ func (s *server) quitCurrentRoom(c *client) {
 
 func (s *server) shutdown(c *client) {
 	log.Printf("client has disconnected: %s", c.conn.RemoteAddr().String())
-	delete(c.room.members, c.conn.RemoteAddr())
+	if c.room != nil {
+		delete(c.room.members, c.conn.RemoteAddr())
+	}
 }

@@ -3,6 +3,7 @@
 <script>
 import VueTerminal from './components/Terminal.vue'
 import { ref } from 'vue'
+const baseUrl = import.meta.env.VITE_API_BASE_URL
 export default {
   data: ()=>({
       messages: [
@@ -31,7 +32,7 @@ export default {
   },
   created: function() {
     console.log("Starting connection to WebSocket Server")
-    this.connection = new WebSocket("ws://127.0.0.1:8080/connect")
+    this.connection = new WebSocket(`ws://${baseUrl}/connect`)
 
     this.connection.onmessage = (event) => {
       const currentDate = new Date(); 

@@ -4,7 +4,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 5050"
+    "preview": "vite preview --port 5050",
+    "prebuild": "rm -rf ../chat_service/static/dist",
+    "postbuild": "mv dist ../chat_service/static"
   },
   "dependencies": {
     "@quasar/extras": "^1.14.0",

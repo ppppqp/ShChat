@@ -197,7 +197,7 @@ jQuery;
 
                 var rules = [
                     att+
-                        '{ position: relative; display: block; overflow-X: hidden; height: 100%; }',
+                        '{ position: relative; display: block; overflow-x: hidden; height: 100%; }',
                     'div.content div p'+
                         '{ margin: 0; }',
                     'div.content div'+
